@@ -1,0 +1,4 @@
+requests~=2.32.3
+autogen~=0.3.0
+flask~=3.0.3
+streamlit~=1.38.0
