@@ -19,7 +19,7 @@ class TrackableUserProxyAgent(UserProxyAgent):
 
 
 if __name__ == '__main__':
-    llm_config = {"model": "deepseek-chat", "api_key": '',
+    llm_config = {"model": "deepseek-chat", "api_key": 'sk-27b9518bb9fd49f1abdf42265c9710c2',
                   "base_url": "https://api.deepseek.com"}
     assistant = TrackableAssistantAgent(name="assistant", llm_config=llm_config)
 
@@ -46,19 +46,28 @@ if __name__ == '__main__':
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
 
+            if "chat_initiated" not in st.session_state:
+                st.session_state.chat_initiated = False
 
-            async def initiate_chat():
-                # 开启多轮对话，直到满足 max_turns
-                result = await user_proxy.a_initiate_chat(
-                    recipient=assistant,
-                    summary_method="reflection_with_llm",
-                    message=user_input,
-                    max_turns=3
-                )
-                # 显示对话结果
-                if result:
-                    st.markdown(f"**Assistant:** {result}")
+            if not st.session_state.chat_initiated:
+                async def initiate_chat():
+                    # 开启多轮对话，直到满足 max_turns
+                    result = await user_proxy.a_initiate_chat(
+                        recipient=assistant,
+                        summary_method="reflection_with_llm",
+                        message=user_input,
+                        max_turns=3
+                    )
+                    # 显示对话结果
+                    if result:
+                        st.markdown(f"**Assistant:** {result.summary}")
 
 
-            # 运行异步函数
-            loop.run_until_complete(initiate_chat())
+                # 运行异步函数
+                loop.run_until_complete(initiate_chat())
+
+                loop.close()
+
+                st.session_state.chat_initiated = True
+            elif user_input == 'exit':
+                st.stop()

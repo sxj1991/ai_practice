@@ -32,9 +32,6 @@ if __name__ == '__main__':
     llm_config = {"model": "deepseek-chat", "api_key": "",
                   "base_url": "https://api.deepseek.com"}
 
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-
     user_proxy.initiate_chat(recipient=assistant,
                              # 模型归纳
                              summary_method="reflection_with_llm",
